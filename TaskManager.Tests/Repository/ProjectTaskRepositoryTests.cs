@@ -65,7 +65,7 @@ namespace TaskManager.Tests.Repository
 			//Arrange
 			
 			//Act
-			var result = taskRepository.GetAllTasks();
+			var result = await taskRepository.GetAllTasksAsync();
 			//Assert
 			result.Should().NotBeNull();
 			result.Should().BeOfType(typeof(List<ProjectTask>));
@@ -78,7 +78,7 @@ namespace TaskManager.Tests.Repository
 			int taskId = 1;
 			
 			//Act
-			var result = taskRepository.GetTaskById(taskId);
+			var result = await taskRepository.GetTaskByIdAsync(taskId);
 			//Assert
 			result.Should().NotBeNull();
 			result.Should().BeOfType(typeof(ProjectTask));
@@ -90,7 +90,7 @@ namespace TaskManager.Tests.Repository
 			var taskName = "tAsk nuMbeR 1  ";
 			
 			//Act
-			var result = taskRepository.GetTaskByName(taskName);
+			var result = await taskRepository.GetTaskByNameAsync(taskName);
 			//Assert
 			result.Should().NotBeNull();
 			result.Should().BeOfType(typeof(ProjectTask));
@@ -105,8 +105,8 @@ namespace TaskManager.Tests.Repository
 			int priorityHighEmptyResult = 93;
 			
 			//Act
-			var okResult = taskRepository.GetTasksPriorityRange(priorityLow, priorityHigh);
-			var emptyResult = taskRepository.GetTasksPriorityRange(priorityLowEmptyResult, priorityHighEmptyResult);
+			var okResult = await taskRepository.GetTasksPriorityRangeAsync(priorityLow, priorityHigh);
+			var emptyResult = await taskRepository.GetTasksPriorityRangeAsync(priorityLowEmptyResult, priorityHighEmptyResult);
 			//Assert
 			okResult.Should().NotBeNull();
 			okResult.Should().BeOfType(typeof(List<ProjectTask>));
@@ -120,8 +120,8 @@ namespace TaskManager.Tests.Repository
 			var statusEmptyReturn = ProjectTaskStatus.Done;
 			
 			//Act
-			var okResult = taskRepository.GetTasksWithStatus(status);
-			var emptyResult = taskRepository.GetTasksWithStatus(statusEmptyReturn);
+			var okResult = await taskRepository.GetTasksWithStatusAsync(status);
+			var emptyResult = await taskRepository.GetTasksWithStatusAsync(statusEmptyReturn);
 			//Assert
 			okResult.Should().NotBeNull();
 			okResult.Should().BeOfType(typeof(List<ProjectTask>));
@@ -136,8 +136,8 @@ namespace TaskManager.Tests.Repository
 			int taskIdFalse = 12;
 			
 			//Act
-			var trueResult = taskRepository.TaskBelongsToProjectNoTracking(taskIdTrue, projectId);
-			var falseResult = taskRepository.TaskBelongsToProjectNoTracking(taskIdFalse, projectId);
+			var trueResult = await taskRepository.TaskBelongsToProjectNoTrackingAsync(taskIdTrue, projectId);
+			var falseResult = await taskRepository.TaskBelongsToProjectNoTrackingAsync(taskIdFalse, projectId);
 			//Assert
 			trueResult.Should().BeTrue();
 			falseResult.Should().BeFalse();
@@ -151,8 +151,8 @@ namespace TaskManager.Tests.Repository
 			ProjectTask taken = new() { TaskName = "task number 1" };
 			
 			//Act
-			var falseResult = taskRepository.TaskNameAlreadyTaken(free, projectId);
-			var trueResult = taskRepository.TaskNameAlreadyTaken(taken, projectId);
+			var falseResult = await taskRepository.TaskNameAlreadyTakenAsync(free, projectId);
+			var trueResult = await taskRepository.TaskNameAlreadyTakenAsync(taken, projectId);
 			//Assert
 			falseResult.Should().BeFalse();
 			trueResult.Should().BeTrue();
@@ -165,8 +165,8 @@ namespace TaskManager.Tests.Repository
 			int taskNotExistId = 0;
 			
 			//Act
-			var trueResult = taskRepository.ProjectTaskExists(taskExistId);
-			var falseResult = taskRepository.ProjectTaskExists(taskNotExistId);
+			var trueResult = await taskRepository.ProjectTaskExistsAsync(taskExistId);
+			var falseResult = await taskRepository.ProjectTaskExistsAsync(taskNotExistId);
 			//Assert
 			trueResult.Should().BeTrue();
 			falseResult.Should().BeFalse();	
@@ -187,7 +187,7 @@ namespace TaskManager.Tests.Repository
 		{
 			//Arrange
 			
-			ProjectTask task = dbContext.ProjectTasks.FirstOrDefault(t => t.Id == 1);
+			ProjectTask task = await dbContext.ProjectTasks.FirstOrDefaultAsync(t => t.Id == 1);
 			
 			//Act
 			var trueResult = taskRepository.UpdateProjectTask(task);
@@ -199,7 +199,7 @@ namespace TaskManager.Tests.Repository
 		{
 			//Arrange
 			
-			ProjectTask task = dbContext.ProjectTasks.FirstOrDefault(t => t.Id == 2);
+			ProjectTask task = await dbContext.ProjectTasks.FirstOrDefaultAsync(t => t.Id == 2);
 			
 			//Act
 			var trueResult = taskRepository.DeleteProjectTask(task);

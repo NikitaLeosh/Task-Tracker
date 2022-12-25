@@ -26,11 +26,11 @@ namespace TaskManager.Controllers
 		[HttpGet]
 		[ProducesResponseType(200, Type = typeof(IEnumerable<ProjectNoTasksDto>))]
 		[ProducesResponseType(404)]
-		public IActionResult GetAllProjects()
+		public async Task<IActionResult> GetAllProjects()
 		{
 			//returns the list of all the projects and shows it without the tasks
 			//using auto mapper to create the instances of DTOs to show
-			var projectsMap = _mapper.Map<List<ProjectNoTasksDto>>(_projectRepository.GetAllProjects());
+			var projectsMap = _mapper.Map<List<ProjectNoTasksDto>>(await _projectRepository.GetAllProjectsAsync());
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 			if (projectsMap.Count() > 0)
@@ -42,27 +42,27 @@ namespace TaskManager.Controllers
 		[HttpGet("{projectId}")]
 		[ProducesResponseType(200, Type = typeof(ProjectNoTasksDto))]
 		[ProducesResponseType(400)]
-		public IActionResult GetProjectById(int projectId)
+		public async Task<IActionResult> GetProjectById(int projectId)
 		{
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 			//checking project for existance
-			if (!_projectRepository.ProjectExists(projectId))
+			if (!(await _projectRepository.ProjectExistsAsync(projectId)))
 				return NotFound();
 			//using auto mapper to create instanse of returned DTO object
-			var projectMap = _mapper.Map<ProjectNoTasksDto>(_projectRepository.GetProjectById(projectId));
+			var projectMap = _mapper.Map<ProjectNoTasksDto>(await _projectRepository.GetProjectByIdAsync(projectId));
 			return Ok(projectMap);
 		}
 
 		[HttpGet("name/{projectName}")]
 		[ProducesResponseType(200, Type = typeof(ProjectNoTasksDto))]
 		[ProducesResponseType(400)]
-		public IActionResult GetProjectByName(string projectName)
+		public async Task<IActionResult> GetProjectByName(string projectName)
 		{
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 			//using auto mapper to create instanse of returned DTO object
-			var project = _projectRepository.GetProjectByName(projectName);
+			var project = await _projectRepository.GetProjectByNameAsync(projectName);
 			if(project == null)
 			{
 				ModelState.AddModelError("", "There is no project with this name");
@@ -76,7 +76,7 @@ namespace TaskManager.Controllers
 		[ProducesResponseType(200, Type = typeof(IEnumerable<ProjectNoTasksDto>))]
 		[ProducesResponseType(404)]
 		[ProducesResponseType(400)]
-		public IActionResult GetProjectsWithStatus(ProjectStatus status)
+		public async Task<IActionResult> GetProjectsWithStatus(ProjectStatus status)
 		{
 			if (status == null)
 				return BadRequest(ModelState);
@@ -84,7 +84,7 @@ namespace TaskManager.Controllers
 			//and shows it without the tasks
 			//using auto mapper to create the instances of DTOs to show
 			var projectsMap = _mapper.Map<List<ProjectNoTasksDto>>
-				(_projectRepository.GetProjectsWithStatus(status));
+				(await _projectRepository.GetProjectsWithStatusAsync(status));
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 			if (projectsMap.Count() > 0)
@@ -100,7 +100,7 @@ namespace TaskManager.Controllers
 		[ProducesResponseType(200, Type = typeof(IEnumerable<ProjectNoTasksDto>))]
 		[ProducesResponseType(404)]
 		[ProducesResponseType(400)]
-		public IActionResult GetProjectsInPriorityRange([FromQuery] int priorityLow, [FromQuery] int priorityHigh)
+		public async Task<IActionResult> GetProjectsInPriorityRange([FromQuery] int priorityLow, [FromQuery] int priorityHigh)
 		{
 			ModelState.Clear();
 			//Check the validity of input values
@@ -114,7 +114,7 @@ namespace TaskManager.Controllers
 			//returns the list of all the projects having priority inside the input range and shows it without the tasks
 			//using auto mapper to create the instances of DTOs to show
 			var projectsMap = _mapper.Map<List<ProjectNoTasksDto>>
-				(_projectRepository.GetProjectsPriorityRange(priorityLow,priorityHigh));
+				(await _projectRepository.GetProjectsPriorityRangeAsync(priorityLow,priorityHigh));
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 			if (projectsMap.Count() > 0)
@@ -128,7 +128,7 @@ namespace TaskManager.Controllers
 		[ProducesResponseType(200, Type = typeof(IEnumerable<ProjectNoTasksDto>))]
 		[ProducesResponseType(404)]
 		[ProducesResponseType(400)]
-		public IActionResult GetProjectsStartInDatesRange([FromQuery] DateTime start, [FromQuery] DateTime end)
+		public async Task<IActionResult> GetProjectsStartInDatesRange([FromQuery] DateTime start, [FromQuery] DateTime end)
 		{
 			if (start == null || end == null)
 				return BadRequest(ModelState);
@@ -144,7 +144,7 @@ namespace TaskManager.Controllers
 			//the input dates range and shows it without the tasks
 			//using auto mapper to create the instances of DTOs to show
 			var projectsMap = _mapper.Map<List<ProjectNoTasksDto>>
-				(_projectRepository.GetProjectsStartAtRange(start,end));
+				(await _projectRepository.GetProjectsStartAtRangeAsync(start,end));
 			
 			if (projectsMap.Count() > 0)
 				return Ok(projectsMap);
@@ -156,14 +156,14 @@ namespace TaskManager.Controllers
 		[ProducesResponseType(200, Type = typeof(IEnumerable<ProjectNoTasksDto>))]
 		[ProducesResponseType(404)]
 		[ProducesResponseType(400)]
-		public IActionResult GetProjectsStartAfterDate([FromQuery] DateTime start)
+		public async Task<IActionResult> GetProjectsStartAfterDate([FromQuery] DateTime start)
 		{
 			if (start == null)
 				return BadRequest(ModelState);
 			//returns the list of all the projects that start after input date and shows it without the tasks
 			//using auto mapper to create the instances of DTOs to show
 			var projectsMap = _mapper.Map<List<ProjectNoTasksDto>>
-				(_projectRepository.GetProjectsStartAfter(start));
+				(await _projectRepository.GetProjectsStartAfterAsync(start));
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 			if (projectsMap.Count() > 0)
@@ -177,7 +177,7 @@ namespace TaskManager.Controllers
 		[ProducesResponseType(200, Type = typeof(IEnumerable<ProjectNoTasksDto>))]
 		[ProducesResponseType(404)]
 		[ProducesResponseType(400)]
-		public IActionResult GetProjectsEndBeforeDate([FromQuery] DateTime end)
+		public async Task<IActionResult> GetProjectsEndBeforeDate([FromQuery] DateTime end)
 		{
 			if (end == null)
 				return BadRequest(ModelState);
@@ -186,7 +186,7 @@ namespace TaskManager.Controllers
 			//and shows it without the tasks
 			//using auto mapper to create the instances of DTOs to show
 			var tasksMap = _mapper.Map<List<ProjectNoTasksDto>>
-				(_projectRepository.GetProjectsEndBefore(end));
+				(await _projectRepository.GetProjectsEndBeforeAsync(end));
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 			if (tasksMap.Count() > 0)
@@ -201,11 +201,11 @@ namespace TaskManager.Controllers
 		[ProducesResponseType(200, Type = typeof(IEnumerable<ProjectTaskDto>))]
 		[ProducesResponseType(400)]
 		[ProducesResponseType(404)]
-		public IActionResult GetTasksOfAProject(int projectId)
+		public async Task<IActionResult> GetTasksOfAProject(int projectId)
 		{
 			ModelState.Clear();
 			//checking the project for existance
-			if (!_projectRepository.ProjectExists(projectId))
+			if (!(await _projectRepository.ProjectExistsAsync(projectId)))
 			{
 				//the project does not exist. Adding the model error and returning "not found" code
 				ModelState.AddModelError("", "Project has not been found");
@@ -215,7 +215,7 @@ namespace TaskManager.Controllers
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 			//using auto mapper to create instanse of returned DTO object
-			var tasksMap = _mapper.Map<List<ProjectTaskDto>>(_projectRepository.GetTasksOfAProject(projectId));
+			var tasksMap = _mapper.Map<List<ProjectTaskDto>>(await _projectRepository.GetTasksOfAProjectAsync(projectId));
 			if (tasksMap.Count == 0)
 			{
 				//project has no tasks
@@ -230,7 +230,7 @@ namespace TaskManager.Controllers
 		[ProducesResponseType(422)]
 		//receiving the project information from the request body
 		//in form of safe DTO for creating and editing the projects
-		public IActionResult CreateProject([FromBody] ProjectDto projectCreate)
+		public async Task<IActionResult> CreateProject([FromBody] ProjectDto projectCreate)
 		{
 			ModelState.Clear();
 
@@ -253,7 +253,7 @@ namespace TaskManager.Controllers
 			var projectMap = _mapper.Map<Project>(projectCreate);
 
 			//checking for the exixting projects with the same names
-			if (_projectRepository.ProjectNameAlreadyTaken(projectMap))
+			if (await _projectRepository.ProjectNameAlreadyTakenAsync(projectMap))
 			{
 				//there is project with the same name
 				ModelState.AddModelError("", "This project already exists");
@@ -271,7 +271,7 @@ namespace TaskManager.Controllers
 		[ProducesResponseType(204)]
 		[ProducesResponseType(400)]
 		[ProducesResponseType(422)]
-		public IActionResult UpdateProject(int projectId, [FromBody] ProjectDto projectUpdate)
+		public async Task<IActionResult> UpdateProject(int projectId, [FromBody] ProjectDto projectUpdate)
 		{
 			ModelState.Clear();
 			//checking if anything has been brought in the request body
@@ -279,7 +279,7 @@ namespace TaskManager.Controllers
 				return BadRequest(ModelState);
 
 			//checking the project for existance
-			if(!_projectRepository.ProjectExists(projectId))
+			if(!(await _projectRepository.ProjectExistsAsync(projectId)))
 				return NotFound();
 
 			//Checking the dates are correct
@@ -294,7 +294,7 @@ namespace TaskManager.Controllers
 			projectMap.Id = projectId;
 
 			//checking for the exixting projects with the same names
-			if (_projectRepository.ProjectNameAlreadyTaken(projectMap))
+			if (await _projectRepository.ProjectNameAlreadyTakenAsync(projectMap))
 			{
 				//there is project with the same name
 				ModelState.AddModelError("", "This project already exists");
@@ -320,15 +320,15 @@ namespace TaskManager.Controllers
 		[ProducesResponseType(400)]
 		[ProducesResponseType(404)]
 		[ProducesResponseType(422)]
-		public IActionResult DeleteProject(int projectId)
+		public async Task<IActionResult> DeleteProject(int projectId)
 		{
 			//checking the project for extatance
-			if (!_projectRepository.ProjectExists(projectId))
+			if (!(await _projectRepository.ProjectExistsAsync(projectId)))
 				return NotFound();
 			//bringing the actual project
-			var projectToDelete = _projectRepository.GetProjectById(projectId);
+			var projectToDelete = await _projectRepository.GetProjectByIdAsync(projectId);
 			//bringing in the project's tasks to also delete
-			var tasksOfProjectToDelete = _projectRepository.GetTasksOfAProject(projectId);
+			var tasksOfProjectToDelete = await _projectRepository.GetTasksOfAProjectAsync(projectId);
 			//checking if there are any tasks
 			if (tasksOfProjectToDelete.Count != 0)
 			{

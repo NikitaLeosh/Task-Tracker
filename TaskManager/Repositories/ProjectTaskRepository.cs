@@ -29,26 +29,26 @@ namespace TaskManager.Repositories
 
 		}
 		//CHECK FOR NAME AVAILABILITY
-		public async Task<bool> TaskNameAlreadyTaken(ProjectTask task, int projectId)
+		public async Task<bool> TaskNameAlreadyTakenAsync(ProjectTask task, int projectId)
 		{
 			//Here we select the given project's tasks and check them for matching the input name
 			return await _context.ProjectTasks.Include(p => p.Project).Where(p => p.Project.Id == projectId).
 				AnyAsync(n => n.TaskName.Trim().ToUpper() == task.TaskName.Trim().ToUpper());
 		}
 		//GET ALL
-		public ICollection<ProjectTask> GetAllTasks()
+		public async Task<ICollection<ProjectTask>> GetAllTasksAsync()
 		{
-			return _context.ProjectTasks.ToList();
+			return await _context.ProjectTasks.ToListAsync();
 		}
 		//GET ONE BY ID
-		public ProjectTask GetTaskById(int taskId)
+		public async Task<ProjectTask> GetTaskByIdAsync(int taskId)
 		{
-			return _context.ProjectTasks.Where(t => t.Id == taskId).FirstOrDefault();
+			return await _context.ProjectTasks.Where(t => t.Id == taskId).FirstOrDefaultAsync();
 		}
 		//CHECK FOR EXISTANCE
-		public bool ProjectTaskExists(int taskId)
+		public async Task<bool> ProjectTaskExistsAsync(int taskId)
 		{
-			return _context.ProjectTasks.Any(t => t.Id == taskId);
+			return await _context.ProjectTasks.AnyAsync(t => t.Id == taskId);
 		}
 		//SAVE CHANGES
 		public bool Save()
@@ -57,10 +57,10 @@ namespace TaskManager.Repositories
 			return result > 0;
 		}
 		//CHECK TASK IS IN THE GIVEN PROJECT
-		public bool TaskBelongsToProjectNoTracking(int taskId, int projectId)
+		public async Task<bool> TaskBelongsToProjectNoTrackingAsync(int taskId, int projectId)
 		{
-			var existingTask = _context.ProjectTasks.Include(p => p.Project).AsNoTracking()
-				.Where(p => p.Project.Id == projectId).FirstOrDefault(i => i.Id == taskId);
+			var existingTask = await _context.ProjectTasks.Include(p => p.Project).AsNoTracking()
+				.Where(p => p.Project.Id == projectId).FirstOrDefaultAsync(i => i.Id == taskId);
 			if (existingTask == null)
 				return false;
 			return true;
@@ -72,20 +72,21 @@ namespace TaskManager.Repositories
 			return Save();
 		}
 		//GET TASK BY NAME
-		public ProjectTask GetTaskByName(string taskName)
+		public async Task<ProjectTask> GetTaskByNameAsync(string taskName)
 		{
-			return _context.ProjectTasks.FirstOrDefault
+			return await _context.ProjectTasks.FirstOrDefaultAsync
 				(n => n.TaskName.Trim().ToUpper() == taskName.Trim().ToUpper());
 		}
 		//GET TASKS HAVING PRIORITY IN A GIVEN RANGE
-		public ICollection<ProjectTask> GetTasksPriorityRange(int priorityLow, int priorityHigh)
+		public async Task<ICollection<ProjectTask>> GetTasksPriorityRangeAsync(int priorityLow, int priorityHigh)
 		{
-			return _context.ProjectTasks.Where(p => p.Priority > priorityLow && p.Priority < priorityHigh).ToList();
+			return await _context.ProjectTasks.Where
+				(p => p.Priority > priorityLow && p.Priority < priorityHigh).ToListAsync();
 		}
 		//GET TASKS HAVING THE GIVEN STATUS
-		public ICollection<ProjectTask> GetTasksWithStatus(ProjectTaskStatus status)
+		public async Task<ICollection<ProjectTask>> GetTasksWithStatusAsync(ProjectTaskStatus status)
 		{
-			return _context.ProjectTasks.Where(s => s.TaskStatus == status).ToList();
+			return await _context.ProjectTasks.Where(s => s.TaskStatus == status).ToListAsync();
 		}
 	}
 }

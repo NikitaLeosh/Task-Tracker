@@ -31,47 +31,47 @@ namespace TaskManager.Repositories
 			return Save();
 		}
 		//GET ALL
-		public ICollection<Project> GetAllProjects()
+		public async Task<ICollection<Project>> GetAllProjectsAsync()
 		{
-			return _context.Projects.Include(t => t.Tasks).ToList();
+			return await _context.Projects.Include(t => t.Tasks).ToListAsync();
 		}
 		//GET ONE BY ID
-		public Project GetProjectById(int projectId)
+		public async Task<Project> GetProjectByIdAsync(int projectId)
 		{
-			return _context.Projects.Where(p => p.Id == projectId).FirstOrDefault();
+			return await _context.Projects.Where(p => p.Id == projectId).FirstOrDefaultAsync();
 			
 		}
 
-		public Project GetProjectByName(string name)
+		public async Task<Project> GetProjectByNameAsync(string name)
 		{
-			return _context.Projects.FirstOrDefault
+			return await _context.Projects.FirstOrDefaultAsync
 				(n => n.ProjectName.Trim().ToUpper() == name.Trim().ToUpper());
 		}
 
 		//GET TASKS OF GIVEN PROJECT
 		//No tracking modifiction created for update method to avoid conflicting IDs
-		public ICollection<ProjectTask> GetTasksOfAProjectNoTracking(int projectId)
+		public async Task<ICollection<ProjectTask>> GetTasksOfAProjectNoTrackingAsync(int projectId)
 		{
 			//getting from db all tasks that the related project implies by
 			//including the project field to the queries
-			return _context.ProjectTasks.Include(p => p.Project).AsNoTracking().Where(t => t.Project.Id == projectId).ToList();
+			return await _context.ProjectTasks.Include(p => p.Project).AsNoTracking().Where(t => t.Project.Id == projectId).ToListAsync();
 		}
-		public ICollection<ProjectTask> GetTasksOfAProject(int projectId)
+		public async Task<ICollection<ProjectTask>> GetTasksOfAProjectAsync(int projectId)
 		{
 			//getting from db all tasks that the related project implies by
 			//including the project field to the queries
-			return _context.ProjectTasks.Include(p => p.Project).Where(t => t.Project.Id == projectId).ToList();
+			return await _context.ProjectTasks.Include(p => p.Project).Where(t => t.Project.Id == projectId).ToListAsync();
 		}
 		//CHECK PROJECT FOR EXISTANCE
-		public bool ProjectExists(int projectId)
+		public async Task<bool> ProjectExistsAsync(int projectId)
 		{
-			return _context.Projects.Any(p => p.Id == projectId);
+			return await  _context.Projects.AnyAsync(p => p.Id == projectId);
 		}
 		//CHECK FOR THE NAME AVAILABILITY
-		public bool ProjectNameAlreadyTaken(Project project)
+		public async Task<bool> ProjectNameAlreadyTakenAsync(Project project)
 		{
-			return _context.Projects
-				.Any(n => n.ProjectName.Trim().ToUpper() == project.ProjectName.Trim().ToUpper());
+			return await _context.Projects
+				.AnyAsync(n => n.ProjectName.Trim().ToUpper() == project.ProjectName.Trim().ToUpper());
 		}
 		//SAVE CHANGES IN THE DB
 		//returns true if "saveChanges" method returned a value > 0
@@ -87,29 +87,29 @@ namespace TaskManager.Repositories
 			return Save();
 		}
 		//GET PROJECTS INSIDE PRIORITY RANGE
-		public ICollection<Project> GetProjectsPriorityRange(int priorityLow, int priorityHigh)
+		public async Task<ICollection<Project>> GetProjectsPriorityRangeAsync(int priorityLow, int priorityHigh)
 		{
-			return _context.Projects.Where(p => p.Priority>priorityLow && p.Priority<priorityHigh).ToList();
+			return await _context.Projects.Where(p => p.Priority>priorityLow && p.Priority<priorityHigh).ToListAsync();
 		}
 		//GET PROJECTS THAT START AAFTER INPUT DATE
-		public ICollection<Project> GetProjectsStartAfter(DateTime start)
+		public async Task<ICollection<Project>> GetProjectsStartAfterAsync(DateTime start)
 		{
-			return _context.Projects.Where(d => d.StartDate > start).ToList();
+			return await _context.Projects.Where(d => d.StartDate > start).ToListAsync();
 		}
 		//GET PROJECTS THAT START IN THE INPUT DATES RANGE
-		public ICollection<Project> GetProjectsStartAtRange(DateTime start, DateTime end)
+		public async Task<ICollection<Project>> GetProjectsStartAtRangeAsync(DateTime start, DateTime end)
 		{
-			return _context.Projects.Where(d => d.StartDate > start && d.StartDate < end).ToList();
+			return await _context.Projects.Where(d => d.StartDate > start && d.StartDate < end).ToListAsync();
 		}
 		//GET PROJECTS ENDING BEFORE INPUT DATE
-		public ICollection<Project> GetProjectsEndBefore(DateTime end)
+		public async Task<ICollection<Project>> GetProjectsEndBeforeAsync(DateTime end)
 		{
-			return _context.Projects.Where(d => d.CompletionDate < end).ToList();
+			return await _context.Projects.Where(d => d.CompletionDate < end).ToListAsync();
 		}
 		//GET PROJECTS HAVING INPUT STATUS
-		public ICollection<Project> GetProjectsWithStatus(ProjectStatus status)
+		public async Task<ICollection<Project>> GetProjectsWithStatusAsync(ProjectStatus status)
 		{
-			return _context.Projects.Where(s => s.ProjectStatus == status).ToList();
+			return await _context.Projects.Where(s => s.ProjectStatus == status).ToListAsync();
 		}
 	}
 }

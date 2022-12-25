@@ -61,24 +61,24 @@ namespace TaskManager.Tests.Repository
 			projectRepository = new ProjectRepository(dbContext);
 		}
 		[Fact]
-		public async void ProjectRepository_GetAllProjects_RetusnsICollection()
+		public async void ProjectRepository_GetAllProjectsAsync_RetusnsICollection()
 		{
 			//Arrange
 			
 			//Act
-			var result = projectRepository.GetAllProjects();
+			var result = await projectRepository.GetAllProjectsAsync();
 			//Assert
 			result.Should().NotBeNull();
 			result.Should().BeOfType(typeof(List<Project>));
 		}
 		[Fact]
-		public async void ProjectRepository_GetProjectById_ReturnsProject()
+		public async void ProjectRepository_GetProjectByIdAsync_ReturnsProject()
 		{
 			//Arrange
 			int projetId = 1;
 			
 			//Act
-			var result = projectRepository.GetProjectById(projetId);
+			var result = await projectRepository.GetProjectByIdAsync(projetId);
 			//Assert
 			result.Should().NotBeNull();
 			result.Should().BeOfType(typeof(Project));
@@ -90,39 +90,39 @@ namespace TaskManager.Tests.Repository
 			var projectName = "prOject 1  ";
 			
 			//Act
-			var result = projectRepository.GetProjectByName(projectName);
+			var result = await projectRepository.GetProjectByNameAsync(projectName);
 			//Assert
 			result.Should().NotBeNull();
 			result.Should().BeOfType(typeof(Project));
 		}
 		[Fact]
-		public async void ProjectRepository_GetTasksOfAProject_ReturnsList()
+		public async void ProjectRepository_GetTasksOfAProjectAsync_ReturnsList()
 		{
 			//Arrange
 			int projetId = 1;
 			//var dbContext = await GetDatabaseContext();
 			//var projectRepository = new ProjectRepository(dbContext);
 			//Act
-			var result = projectRepository.GetTasksOfAProject(projetId);
+			var result = await projectRepository.GetTasksOfAProjectAsync(projetId);
 			//Assert
 			result.Should().NotBeNull();
 			result.Should().BeOfType(typeof(List<ProjectTask>));
 		}
 		[Fact]
-		public async void ProjectRepository_GetTasksOfAProjectNoTracking_ReturnsList()
+		public async void ProjectRepository_GetTasksOfAProjectNoTrackingAsync_ReturnsList()
 		{
 			//Arrange
 			int projetId = 1;
 			//var dbContext = await GetDatabaseContext();
 			//var projectRepository = new ProjectRepository(dbContext);
 			//Act
-			var result = projectRepository.GetTasksOfAProjectNoTracking(projetId);
+			var result = await projectRepository.GetTasksOfAProjectNoTrackingAsync(projetId);
 			//Assert
 			result.Should().NotBeNull();
 			result.Should().BeOfType(typeof(List<ProjectTask>));
 		}
 		[Fact]
-		public async void ProjectRepository_GetProjectsPriorityRange_ReturnsList()
+		public async void ProjectRepository_GetProjectsPriorityRangeAsync_ReturnsList()
 		{
 			//Arrange
 			int priorityLow = 1;
@@ -132,38 +132,38 @@ namespace TaskManager.Tests.Repository
 			//var dbContext = await GetDatabaseContext();
 			//var projectRepository = new ProjectRepository(dbContext);
 			//Act
-			var okResult = projectRepository.GetProjectsPriorityRange(priorityLow, priorityHigh);
-			var emptyResult = projectRepository.GetProjectsPriorityRange(priorityLowEmptyResult, priorityHighEmptyResult);
+			var okResult = await projectRepository.GetProjectsPriorityRangeAsync(priorityLow, priorityHigh);
+			var emptyResult = await projectRepository.GetProjectsPriorityRangeAsync(priorityLowEmptyResult, priorityHighEmptyResult);
 			//Assert
 			okResult.Should().NotBeNull();
 			okResult.Should().BeOfType(typeof(List<Project>));
 			emptyResult.Should().BeEmpty();
 		}
 		[Fact]
-		public async void ProjectRepository_GetProjectsStartAfter_ReturnsList()
+		public async void ProjectRepository_GetProjectsStartAfterAsync_ReturnsList()
 		{
 			//Arrange
 			DateTime start = new DateTime(2010, 3, 4);
 			DateTime startEmptyReturn = new DateTime(2030, 3, 4);
 			
 			//Act
-			var okResult = projectRepository.GetProjectsStartAfter(start);
-			var emptyResult = projectRepository.GetProjectsStartAfter(startEmptyReturn);
+			var okResult = await projectRepository.GetProjectsStartAfterAsync(start);
+			var emptyResult = await projectRepository.GetProjectsStartAfterAsync(startEmptyReturn);
 			//Assert
 			okResult.Should().NotBeNull();
 			okResult.Should().BeOfType(typeof(List<Project>));
 			emptyResult.Should().BeEmpty();
 		}
 		[Fact]
-		public async void ProjectRepository_GetProjectsEndBefore_ReturnsList()
+		public async void ProjectRepository_GetProjectsEndBeforeAsync_ReturnsList()
 		{
 			//Arrange
 			DateTime end = new DateTime(2030, 3, 4);
 			DateTime endEmptyReturn = new DateTime(2000, 3, 4);
 			
 			//Act
-			var okResult = projectRepository.GetProjectsEndBefore(end);
-			var emptyResult = projectRepository.GetProjectsEndBefore(endEmptyReturn);
+			var okResult = await projectRepository.GetProjectsEndBeforeAsync(end);
+			var emptyResult = await projectRepository.GetProjectsEndBeforeAsync(endEmptyReturn);
 			//Assert
 			okResult.Should().NotBeNull();
 			okResult.Should().BeOfType(typeof(List<Project>));
@@ -171,7 +171,7 @@ namespace TaskManager.Tests.Repository
 		}
 
 		[Fact]
-		public async void ProjectRepository_GetProjectsStartAtRange_ReturnsList()
+		public async void ProjectRepository_GetProjectsStartAtRangeAsync_ReturnsList()
 		{
 			//Arrange
 			DateTime start = new DateTime(2010, 3, 4);
@@ -181,53 +181,53 @@ namespace TaskManager.Tests.Repository
 
 			
 			//Act
-			var okResult = projectRepository.GetProjectsStartAtRange(start, end);
-			var emptyResult = projectRepository.GetProjectsStartAtRange(startEmptyReturn, endEmptyReturn);
+			var okResult = await projectRepository.GetProjectsStartAtRangeAsync(start, end);
+			var emptyResult = await projectRepository.GetProjectsStartAtRangeAsync(startEmptyReturn, endEmptyReturn);
 			//Assert
 			okResult.Should().NotBeNull();
 			okResult.Should().BeOfType(typeof(List<Project>));
 			emptyResult.Should().BeEmpty();
 		}
 		[Fact]
-		public async void ProjectRepositpry_GetProjectsWithStatus_ReturnsList()
+		public async void ProjectRepositpry_GetProjectsWithStatusAsync_ReturnsList()
 		{
 			//Arrange
 			var status = ProjectStatus.Active;
 			var statusEmptyReturn = ProjectStatus.Completed;
 			
 			//Act
-			var okResult = projectRepository.GetProjectsWithStatus(status);
-			var emptyResult = projectRepository.GetProjectsWithStatus(statusEmptyReturn);
+			var okResult = await projectRepository.GetProjectsWithStatusAsync(status);
+			var emptyResult = await projectRepository.GetProjectsWithStatusAsync(statusEmptyReturn);
 			//Assert
 			okResult.Should().NotBeNull();
 			okResult.Should().BeOfType(typeof(List<Project>));
 			emptyResult.Should().BeEmpty();
 		}
 		[Fact]
-		public async void ProjectRepository_ProjectNameAlreadyTaken_ReturnsBool()
+		public async void ProjectRepository_ProjectNameAlreadyTakenAsync_ReturnsBool()
 		{
 			//Arrange
 			Project free = new(){ProjectName = "blablabla"};
 			Project taken = new() { ProjectName = "project 1" };
 			
 			//Act
-			var falseResult= projectRepository.ProjectNameAlreadyTaken(free);
-			var trueResult = projectRepository.ProjectNameAlreadyTaken(taken);
+			var falseResult= await projectRepository.ProjectNameAlreadyTakenAsync(free);
+			var trueResult = await projectRepository.ProjectNameAlreadyTakenAsync(taken);
 			//Assert
 			falseResult.Should().BeFalse();
 			trueResult.Should().BeTrue();
 		}
 
 		[Fact]
-		public async void ProjectRepository_ProjectExists_ReturnsBool()
+		public async void ProjectRepository_ProjectExistsAsync_ReturnsBool()
 		{
 			//Arrange
 			int projectIdTrue = 1;
 			int projectIdFalse = 0;
 			
 			//Act
-			var trueResult = projectRepository.ProjectExists(projectIdTrue);
-			var falseResult = projectRepository.ProjectExists(projectIdFalse);
+			var trueResult = await projectRepository.ProjectExistsAsync(projectIdTrue);
+			var falseResult = await projectRepository.ProjectExistsAsync(projectIdFalse);
 			//Assert
 			trueResult.Should().BeTrue();
 			falseResult.Should().BeFalse();
@@ -248,7 +248,7 @@ namespace TaskManager.Tests.Repository
 		public async void ProjectRepository_UpdateProject_ReturnsBool()
 		{
 			//Arrange
-			var project = dbContext.Projects.FirstOrDefault(p => p.Id == 1);
+			var project = await dbContext.Projects.FirstOrDefaultAsync(p => p.Id == 1);
 
 			//Act
 			var result = projectRepository.UpdateProject(project);
@@ -260,7 +260,7 @@ namespace TaskManager.Tests.Repository
 		{
 			//Arrange
 			
-			var project = dbContext.Projects.FirstOrDefault(p => p.Id == 1);
+			var project = await dbContext.Projects.FirstOrDefaultAsync(p => p.Id == 1);
 			
 			//Act
 			var result = projectRepository.DeleteProject(project);

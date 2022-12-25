@@ -26,11 +26,11 @@ namespace TaskManager.Controllers
 
 		[HttpGet]
 		[ProducesResponseType(200, Type = typeof(IEnumerable<TaskNoNavigationPropsDto>))]
-		public IActionResult GetAllTasks()
+		public async Task<IActionResult> GetAllTasks()
 		{
 			//returns the list of all the tasks and shows it without the navigational properties
 			//using auto mapper to create the instances of DTOs to show
-			var tasksMap = _mapper.Map<List<TaskNoNavigationPropsDto>>(_taskRepository.GetAllTasks());
+			var tasksMap = _mapper.Map<List<TaskNoNavigationPropsDto>>(await _taskRepository.GetAllTasksAsync());
 			//Validating the model state
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
@@ -44,29 +44,30 @@ namespace TaskManager.Controllers
 		[ProducesResponseType(200, Type = typeof(TaskNoNavigationPropsDto))]
 		[ProducesResponseType(400)]
 		[ProducesResponseType(404)]
-		public IActionResult GetTaskById(int projectTaskId)
+		public async Task<IActionResult> GetTaskById(int projectTaskId)
 		{
 			//Validating the model state
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 			//Checking the task for existance
-			if (!_taskRepository.ProjectTaskExists(projectTaskId))
+			if (!(await _taskRepository.ProjectTaskExistsAsync(projectTaskId)))
 				return NotFound();
 			//using the auto mapper to create the instanse that will be brought in the response
-			var projectTaskMap = _mapper.Map<TaskNoNavigationPropsDto>(_taskRepository.GetTaskById(projectTaskId));
+			var projectTaskMap = _mapper.Map<TaskNoNavigationPropsDto>(
+				await _taskRepository.GetTaskByIdAsync(projectTaskId));
 			return Ok(projectTaskMap);
 		}
 		[HttpGet("task-name/{taskName}")]
 		[ProducesResponseType(200, Type = typeof(TaskNoNavigationPropsDto))]
 		[ProducesResponseType(400)]
 		[ProducesResponseType(404)]
-		public IActionResult GetTaskByName(string taskName)
+		public async Task <IActionResult> GetTaskByName(string taskName)
 		{
 			//Validating the model state
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 			//bringing the task
-			var projectTask = _taskRepository.GetTaskByName(taskName);
+			var projectTask = await _taskRepository.GetTaskByNameAsync(taskName);
 			if(projectTask == null)
 			{
 				//no task has been found
@@ -82,7 +83,7 @@ namespace TaskManager.Controllers
 		[ProducesResponseType(200, Type = typeof(IEnumerable<TaskNoNavigationPropsDto>))]
 		[ProducesResponseType(404)]
 		[ProducesResponseType(400)]
-		public IActionResult GetTasksInPriorityRange([FromQuery] int priorityLow, [FromQuery] int priorityHigh)
+		public async Task<IActionResult> GetTasksInPriorityRange([FromQuery] int priorityLow, [FromQuery] int priorityHigh)
 		{
 			//Check the validity of input values
 			bool priorityLowIsValid = (priorityLow < priorityHigh) && (priorityLow > 0) && (priorityLow < 101);
@@ -97,7 +98,7 @@ namespace TaskManager.Controllers
 			//and shows it without the navigational properties
 			//using auto mapper to create the instances of DTOs to show
 			var tasksMap = _mapper.Map<List<TaskNoNavigationPropsDto>>
-				(_taskRepository.GetTasksPriorityRange(priorityLow, priorityHigh));
+				(await _taskRepository.GetTasksPriorityRangeAsync(priorityLow, priorityHigh));
 			//validating the model state
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
@@ -112,7 +113,7 @@ namespace TaskManager.Controllers
 		[ProducesResponseType(200, Type = typeof(IEnumerable<TaskNoNavigationPropsDto>))]
 		[ProducesResponseType(404)]
 		[ProducesResponseType(400)]
-		public IActionResult GetTasksWithStatus(ProjectTaskStatus status)
+		public async Task<IActionResult> GetTasksWithStatus(ProjectTaskStatus status)
 		{
 			if (status == null)
 				return BadRequest(ModelState);
@@ -121,7 +122,7 @@ namespace TaskManager.Controllers
 			//and shows it without the navigationsl properties
 			//using auto mapper to create the instances of DTOs to show
 			var taskMap = _mapper.Map<List<TaskNoNavigationPropsDto>>
-				(_taskRepository.GetTasksWithStatus(status));
+				(await _taskRepository.GetTasksWithStatusAsync(status));
 
 			//Validating the model state
 			if (!ModelState.IsValid)
@@ -139,13 +140,13 @@ namespace TaskManager.Controllers
 		[ProducesResponseType(400)]
 		[ProducesResponseType(404)]
 		[ProducesResponseType(422)]
-		public IActionResult CreateTask(int projectId, [FromBody] ProjectTaskDto taskCreate)
+		public async Task<IActionResult> CreateTask(int projectId, [FromBody] ProjectTaskDto taskCreate)
 		{
 			//checking if any taskDTO was brought in with the request
 			if (taskCreate == null)
 				return BadRequest(ModelState);
 			//checking the project with the given ID for existance
-			if (!_projectRepository.ProjectExists(projectId))
+			if (!(await _projectRepository.ProjectExistsAsync(projectId)))
 				return NotFound();
 			//validating the model state
 			if (!ModelState.IsValid)
@@ -155,10 +156,10 @@ namespace TaskManager.Controllers
 			var taskMap = _mapper.Map<ProjectTask>(taskCreate);
 
 			//adding the the project property
-			taskMap.Project = _projectRepository.GetProjectById(projectId);
+			taskMap.Project = await _projectRepository.GetProjectByIdAsync(projectId);
 
 			//Checking for existance of tasks with the same name in the given project
-			if (_taskRepository.TaskNameAlreadyTaken(taskMap, projectId))
+			if (await _taskRepository.TaskNameAlreadyTakenAsync(taskMap, projectId))
 			{
 				ModelState.AddModelError("", "This task already exists in this project");
 				return StatusCode(422, ModelState);
@@ -180,14 +181,14 @@ namespace TaskManager.Controllers
 		[ProducesResponseType(422)]
 		
 		//getting the project ID from query
-		public IActionResult UpdateTask([FromQuery] int projectId, int taskId, [FromBody] ProjectTaskDto taskUpdate)
+		public async Task<IActionResult> UpdateTask([FromQuery] int projectId, int taskId, [FromBody] ProjectTaskDto taskUpdate)
 		{
 			//checking the task and related project for existance
-			if (!(_projectRepository.ProjectExists(projectId) && _taskRepository.ProjectTaskExists(taskId)))
+			if (!(await _projectRepository.ProjectExistsAsync(projectId) && await _taskRepository.ProjectTaskExistsAsync(taskId)))
 				return NotFound();
 
 			//checking the task is actually belongs to the given project
-			if (!_taskRepository.TaskBelongsToProjectNoTracking(taskId, projectId))
+			if (!(await _taskRepository.TaskBelongsToProjectNoTrackingAsync(taskId, projectId)))
 			{
 				//task is not in the given project
 				ModelState.AddModelError("", "This task is not in the entered project");
@@ -205,7 +206,7 @@ namespace TaskManager.Controllers
 			taskMap.Id = taskId;
 
 			//Checking for existance of tasks with the same name in the given project
-			if (_taskRepository.TaskNameAlreadyTaken(taskMap, projectId))
+			if (await _taskRepository.TaskNameAlreadyTakenAsync(taskMap, projectId))
 			{
 				//task with the same name exists
 				ModelState.AddModelError("", "Task with the similar name already exists in this project");
@@ -225,14 +226,14 @@ namespace TaskManager.Controllers
 		[ProducesResponseType(404)]
 		[ProducesResponseType(400)]
 		[ProducesResponseType(422)]
-		public IActionResult DeleteTask(int taskId)
+		public async Task<IActionResult> DeleteTask(int taskId)
 		{
 			//Check for existance
-			if (!_taskRepository.ProjectTaskExists(taskId))
+			if (!(await _taskRepository.ProjectTaskExistsAsync(taskId)))
 				return NotFound();
 
 			//bringing the task to delete by id
-			var taskToDelete = _taskRepository.GetTaskById(taskId);
+			var taskToDelete = await _taskRepository.GetTaskByIdAsync(taskId);
 
 			//validating the model state
 			if (!ModelState.IsValid)
