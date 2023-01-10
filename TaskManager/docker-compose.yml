@@ -1,0 +1,33 @@
+version: '3.4'
+
+networks:
+ taskmanagerapp:
+
+services:
+  taskmanagerdatabase:
+    container_name: task-manager-db
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    ports:
+    - 8002:1433
+    environment:
+    - ACCEPT_EULA=Y
+    - SA_PASSWORD=!Password123@
+    networks: 
+    - taskmanagerapp
+  taskmanager:
+    container_name: task-manager
+    image: ${DOCKER_REGISTRY-}taskmanager
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+     - 8001:80
+    depends_on:
+    - taskmanagerdatabase
+    environment:
+     - DB_HOST=taskmanagerdatabase
+     - DB_NAME=TaskManagerDb
+     - SA_PASSWORD=!Password123@
+    networks:
+     - taskmanagerapp
+    

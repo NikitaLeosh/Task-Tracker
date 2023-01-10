@@ -9,9 +9,9 @@ namespace TaskManager.Repositories
 {
 	public class CheckProjectRepository : ICheckProjectRepository
 	{
-		private readonly ApplicationDbContext _context;
+		private readonly ProjectDbContext _context;
 
-		public CheckProjectRepository(ApplicationDbContext context)
+		public CheckProjectRepository(ProjectDbContext context)
 		{
 			_context = context;
 		}

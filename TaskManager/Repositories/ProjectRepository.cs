@@ -10,9 +10,9 @@ namespace TaskManager.Repositories
 	public class ProjectRepository : IProjectRepository
 	{
 
-		private readonly ApplicationDbContext _context;
+		private readonly ProjectDbContext _context;
 
-		public ProjectRepository(ApplicationDbContext context)
+		public ProjectRepository(ProjectDbContext context)
 		{
 			_context = context;
 		}

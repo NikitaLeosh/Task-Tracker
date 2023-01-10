@@ -17,12 +17,12 @@ namespace TaskManager.Tests.Repository
 	{
 		private readonly Guid _testProjectId = Guid.NewGuid();
 		private readonly Guid _testTaskId = Guid.NewGuid();
-		private ApplicationDbContext GetDatabaseContext()
+		private ProjectDbContext GetDatabaseContext()
 		{
-			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			var options = new DbContextOptionsBuilder<ProjectDbContext>()
 				.UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
 				.Options;
-			var databaseContext = new ApplicationDbContext(options);
+			var databaseContext = new ProjectDbContext(options);
 			databaseContext.Database.EnsureCreated();
 			if (databaseContext.Projects.Count() <= 0)
 			{
@@ -90,7 +90,7 @@ namespace TaskManager.Tests.Repository
 		}
 
 		private readonly ProjectTaskRepository taskRepository;
-		private readonly ApplicationDbContext dbContext;
+		private readonly ProjectDbContext dbContext;
 		public ProjectTaskRepositoryTests()
 		{
 			dbContext = GetDatabaseContext();

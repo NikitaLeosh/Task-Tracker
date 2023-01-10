@@ -6,8 +6,8 @@ namespace TaskManager.Data
 {
 	public class Seed
 	{
-		private readonly ApplicationDbContext _context;
-		public Seed(ApplicationDbContext context)
+		private readonly ProjectDbContext _context;
+		public Seed(ProjectDbContext context)
 		{
 			_context = context;
 		}

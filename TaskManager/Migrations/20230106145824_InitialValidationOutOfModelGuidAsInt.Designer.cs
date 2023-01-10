@@ -11,7 +11,7 @@ using TaskManager.Data;
 
 namespace TaskManager.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
+    [DbContext(typeof(ProjectDbContext))]
     [Migration("20230106145824_InitialValidationOutOfModelGuidAsInt")]
     partial class InitialValidationOutOfModelGuidAsInt
     {

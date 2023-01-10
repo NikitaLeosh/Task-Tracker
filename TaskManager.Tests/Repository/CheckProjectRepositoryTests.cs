@@ -16,12 +16,12 @@ namespace TaskManager.Tests.Repository
 	public class CheckProjectRepositoryTests
 	{
 		private readonly Guid _testGuid = Guid.NewGuid();
-		private ApplicationDbContext GetDatabaseContext()
+		private ProjectDbContext GetDatabaseContext()
 		{
-			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			var options = new DbContextOptionsBuilder<ProjectDbContext>()
 				.UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
 				.Options;
-			var databaseContext = new ApplicationDbContext(options);
+			var databaseContext = new ProjectDbContext(options);
 			databaseContext.Database.EnsureCreated();
 			if (databaseContext.Projects.Count() <= 0)
 			{
@@ -85,7 +85,7 @@ namespace TaskManager.Tests.Repository
 			}
 			return databaseContext;
 		}
-		private readonly ApplicationDbContext dbContext;
+		private readonly ProjectDbContext dbContext;
 		private readonly ProjectRepository projectRepository;
 		private readonly CheckProjectRepository checkProjectRepository;
 		public CheckProjectRepositoryTests()

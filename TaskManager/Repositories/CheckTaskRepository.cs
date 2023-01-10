@@ -8,10 +8,10 @@ namespace TaskManager.Repositories
 {
 	public class CheckTaskRepository : ICheckTaskRepository
 	{
-		private readonly ApplicationDbContext _context;
+		private readonly ProjectDbContext _context;
 		private readonly ICheckProjectRepository _checkProjectRepository;
 
-		public CheckTaskRepository(ApplicationDbContext context, ICheckProjectRepository checkProjectRepository)
+		public CheckTaskRepository(ProjectDbContext context, ICheckProjectRepository checkProjectRepository)
 		{
 			_context = context;
 			_checkProjectRepository = checkProjectRepository;

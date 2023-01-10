@@ -6,6 +6,10 @@ using TaskManager.Services;
 
 internal class Program
 {
+	private static string dbHost = Environment.GetEnvironmentVariable("DB_HOST");
+	private static string dbName = Environment.GetEnvironmentVariable("DB_NAME");
+	private static string Password = Environment.GetEnvironmentVariable("SA_PASSWORD");
+	private static string connectionstring = $"Data Source={dbHost};Initial Catalog={dbName};User ID=sa;Password={Password};Encrypt=false";
 	private static void Main(string[] args)
 	{
 		var builder = WebApplication.CreateBuilder(args);
@@ -22,17 +26,19 @@ internal class Program
 		builder.Services.AddScoped<ICheckTaskRepository, CheckTaskRepository>();
 		builder.Services.AddScoped<IProjectValidationService, ProjectValidationService>();
 		builder.Services.AddScoped<ITaskValidationService, TaskValidationService>();
-		builder.Services.AddDbContext<ApplicationDbContext>(options =>
-			{
-				options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-			});
+		//Add DI for database context
+
+		builder.Services.AddDbContext<ProjectDbContext>(options =>
+				{
+					options.UseSqlServer(connectionstring);
+				});
 		builder.Services.AddSwaggerGen();
 
 		//the seeder code
 		var app = builder.Build();
 
-		if (args.Length == 1 && args[0].ToLower() == "seeddata")
-			SeedData(app);
+		//if (args.Length == 1 && args[0].ToLower() == "seeddata")
+		SeedData(app);
 
 		void SeedData(IHost app)
 		{
