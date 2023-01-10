@@ -1,5 +1,6 @@
 # Task-Tracker
-This is one of countless implementations of task-managers out there. 
+### This is one of countless implementations of task-managers out there. 
+###
 The application is conteinerized. To run it locally with docker clone the repository and run the docker-compose.  
 The seeding class will work automatically.  
 Applicatin uses MS SQL database via Entity Framework.<br>
